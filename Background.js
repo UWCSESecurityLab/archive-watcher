@@ -166,11 +166,12 @@ function classifyRequest(requestDetails, tab) {
 }
 
 function initializeMessageListeners() {
-  // Listen for messages from the content script and popup pages
   chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) {
       if (request.type === 'getGlobalCounts') {
         sendResponse(globalCounts);
+      } else if (request.type === 'getVisitForTab') {
+        sendResponse(getVisitForTab(request.tab));
       }
     }
   );
