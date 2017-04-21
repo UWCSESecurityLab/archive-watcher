@@ -1,23 +1,8 @@
 "use strict";
 
-// Things responded to in the platform of Hammer.
-//
-// chrome.windows.onRemoved.addListener(saveSites);
-// chrome.windows.onCreated.addListener(windowRemove);
-// chrome.management.onUninstalled.addListener(handleUninstall);
-// chrome.management.onDisabled.addListener(handleDisable);
-// chrome.webRequest.onErrorOccurred.addListener(onRequestError,
-//                                               { urls: ["<all_urls>"] });
 chrome.webRequest.onBeforeSendHeaders.addListener(onBeforeSendHeaders,
                                                   { urls: ["<all_urls>"] },
                                                   ["blocking", "requestHeaders"]);
-// chrome.webRequest.onCompleted.addListener(onRequestCompleted,
-//                                           { urls: ["<all_urls>"] },
-//                                           ["responseHeaders"]);
-// chrome.webNavigation.onCompleted.addListener(onNavigationCompleted);
-// chrome.webNavigation.onErrorOccurred.addListener(onNavigationError);
-
-
 
 console.log('Background page of Rewriting History Defense is loaded.');
 
@@ -112,6 +97,7 @@ function getHostnameFromUrl(fullUrl) {
   return (new URL(fullUrl)).hostname;
 }
 
+// Check whether url starts with a scheme (\w+://)
 function hasScheme(url) {
   const hasSchemeRE = new RegExp('^\\w+://');
   return hasSchemeRE.test(url);
@@ -148,6 +134,17 @@ function visitIDFromTab(tab) {
   return `${tab.id}>${tab.url}`;
 }
 
+// Classifies a request into the categories measured by the extension:
+//  * "notOnArchive" -- requests where the URL bar isn't on archive.org
+//  * "waybackMachineMetaRequest" -- *.archive.org requests where * != web
+//  * "archiveRequest" -- requests for archived captures of resources/pages
+//  * "archiveEscape" -- escapes
+//  * "unclassifiedRequest" -- something went wrong if this is used
+//
+//  We have to pass in the tab (even though the requestDetails includes the
+//  tabId) because getting the tab is asynchronous and I wanted this function
+//  to be synchronous. It could be rewritten to use promises...
+//  
 function classifyRequest(requestDetails, tab) {
   if (!getHostnameFromUrl(tab.url).endsWith('archive.org')) {
     return 'notOnArchive';
@@ -165,6 +162,7 @@ function classifyRequest(requestDetails, tab) {
   }
 }
 
+// Allows us to communicate with the popup.
 function initializeMessageListeners() {
   chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) {
