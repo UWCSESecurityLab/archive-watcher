@@ -21,9 +21,19 @@
         overflow: hidden;
       }
     </style>
+
+    <link rel="stylesheet" type="text/css" href="switch.css">
   </head>
 
   <body>
+    <label for="escapeBlockingSwitch">Block Escapes?</label>
+    <div class="onoffswitch">
+      <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="escapeBlockingSwitch" checked>
+      <label class="onoffswitch-label" for="escapeBlockingSwitch">
+        <span class="onoffswitch-inner"></span>
+        <span class="onoffswitch-switch"></span>
+      </label>
+    </div>
     <div id="status">
       <h4>Global Counts</h4>
       Total: <span id="total"></span>
