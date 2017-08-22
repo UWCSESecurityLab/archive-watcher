@@ -32,6 +32,10 @@ const globalCounts = new Counts();
 // which uses tab.url and tab.tabId to compute a unique key.
 const visits = {};
 
+let _escapeBlockingEnabled = false;
+let _anachronismBlockingEnabled = false;
+let _anachronismRange = null;
+
 initializeMessageListeners();
 
 // Input: requestDetails, an object containing information about the request.
@@ -170,6 +174,13 @@ function initializeMessageListeners() {
         sendResponse(globalCounts);
       } else if (request.type === 'getVisitForTab') {
         sendResponse(getVisitForTab(request.tab));
+      } else if (request.type === 'setEscapeBlockingEnabled') {
+        _escapeBlockingEnabled = request.escapeBlockingEnabled;
+        console.log(`escape blocking enabled? ${_escapeBlockingEnabled}`);
+      } else if (request.type === 'setAnachronismBlockingEnabled') {
+        _anachronismBlockingEnabled = request.anachronismBlockingEnabled;
+        _anachronismRange = request.anachronismRange;
+        
       }
     }
   );

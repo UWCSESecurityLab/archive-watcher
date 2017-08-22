@@ -1,7 +1,18 @@
 // Get global stats
 
+document.getElementById('escapeBlockingSwitch').onchange = onBlockingSwitchChange;
 refreshPopup();
 setTimeout(refreshPopup, 1000);
+
+function onBlockingSwitchChange() {
+  let checked = document.getElementById('escapeBlockingSwitch').checked;
+  chrome.runtime.sendMessage(
+    {
+      type: 'setEscapeBlockingEnabled',
+      escapeBlockingEnabled: checked
+    }
+  );
+}
 
 function refreshPopup() {
   chrome.runtime.sendMessage(
@@ -54,5 +65,4 @@ function refreshPopup() {
       console.log('multiple active tabs found');
     }
   });
-
 }
