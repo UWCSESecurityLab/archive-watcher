@@ -1,8 +1,10 @@
 // Get global stats
 
 document.getElementById('escapeBlockingSwitch').onchange = onBlockingSwitchChange;
+onBlockingSwitchChange();
 refreshPopup();
 setTimeout(refreshPopup, 1000);
+
 
 function onBlockingSwitchChange() {
   let checked = document.getElementById('escapeBlockingSwitch').checked;

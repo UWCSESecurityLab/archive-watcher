@@ -1,5 +1,32 @@
 "use strict";
 
+/* 
+ * --------------------------------------------------
+ * Keep list of tabs outside of request callback
+ * Idea and code from 
+ * https://stackoverflow.com/questions/15498358/synchronous-call-in-google-chrome-extension
+ * --------------------------------------------------
+ */
+const tabs = {};
+
+// Get all existing tabs
+chrome.tabs.query({}, function(results) {
+    results.forEach(function(tab) {
+        tabs[tab.id] = tab;
+    });
+});
+
+// Create tab event listeners
+function onUpdatedListener(tabId, changeInfo, tab) {
+    tabs[tab.id] = tab;
+}
+function onRemovedListener(tabId) {
+    delete tabs[tabId];
+}
+
+// Subscribe to tab events
+chrome.tabs.onUpdated.addListener(onUpdatedListener);
+chrome.tabs.onRemoved.addListener(onRemovedListener);
 chrome.webRequest.onBeforeSendHeaders.addListener(onBeforeSendHeaders,
                                                   { urls: ["<all_urls>"] },
                                                   ["blocking", "requestHeaders"]);
@@ -32,7 +59,7 @@ const globalCounts = new Counts();
 // which uses tab.url and tab.tabId to compute a unique key.
 const visits = {};
 
-let _escapeBlockingEnabled = false;
+let _escapeBlockingEnabled = true;
 let _anachronismBlockingEnabled = false;
 let _anachronismRange = null;
 
@@ -60,14 +87,31 @@ function onBeforeSendHeaders(requestDetails) {
   }
 
   let willBlock = shouldBlock(requestDetails);
+  if (willBlock) {
+    console.log(`blocking ${requestDetails.url}`);
+  }
   return {
     cancel: willBlock
   };
 }
 
 function shouldBlock(requestDetails) {
-  // TODO: Blocking logic.
-  return false;
+  let tab = tabs[requestDetails.tabId];
+  if (!tab) {
+    return false;
+  }
+  let isEscape = false;
+  try {
+    let requestType = classifyRequest(requestDetails, tab);
+    if (requestType === 'archiveEscape') {
+      isEscape = true;
+    }
+  } catch (err) {
+    console.error(err);
+    // Be careful -- if error, don't block.
+    return false;
+  }
+  return isEscape && _escapeBlockingEnabled;
 }
 
 
@@ -185,3 +229,4 @@ function initializeMessageListeners() {
     }
   );
 }
+
