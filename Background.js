@@ -68,9 +68,9 @@ initializeMessageListeners();
 // Input: requestDetails, an object containing information about the request.
 // Output: An object blocking/not blocking the request.
 function onBeforeSendHeaders(requestDetails) {
-  if (typeof requestDetails.tabId !== 'number' && requestDetails.tabId < 0) {
+  if (typeof requestDetails.tabId !== 'number' || requestDetails.tabId < 0) {
     console.log('tabid is', requestDetails.tabId);
-    console.log(tab);
+    console.log(requestDetails.url);
 
   } else {
     chrome.tabs.get(requestDetails.tabId, function(tab) {
@@ -218,6 +218,8 @@ function initializeMessageListeners() {
         sendResponse(globalCounts);
       } else if (request.type === 'getVisitForTab') {
         sendResponse(getVisitForTab(request.tab));
+      } else if (request.type === 'getEscapeBlockingEnabled') {
+        sendResponse(_escapeBlockingEnabled);
       } else if (request.type === 'setEscapeBlockingEnabled') {
         _escapeBlockingEnabled = request.escapeBlockingEnabled;
         console.log(`escape blocking enabled? ${_escapeBlockingEnabled}`);

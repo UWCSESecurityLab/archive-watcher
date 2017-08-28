@@ -1,7 +1,16 @@
 // Get global stats
 
-document.getElementById('escapeBlockingSwitch').onchange = onBlockingSwitchChange;
-onBlockingSwitchChange();
+const escapeBlockingSwitch = document.getElementById('escapeBlockingSwitch');
+escapeBlockingSwitch.onchange = onBlockingSwitchChange;
+
+chrome.runtime.sendMessage(
+  {
+    type: 'getEscapeBlockingEnabled',
+  },
+  function(escapeBlockingEnabled) {
+    escapeBlockingSwitch.checked = escapeBlockingEnabled;
+  }
+);
 refreshPopup();
 setTimeout(refreshPopup, 1000);
 
