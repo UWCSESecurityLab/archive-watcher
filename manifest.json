@@ -1,9 +1,9 @@
 {
-  "name": "Rewriting History Defense",
-  "version": "0.0.1",
+  "name": "Archive Watcher",
+  "version": "0.1.0",
   "manifest_version": 2,
   
-  "description": "Detects and Blocks Archive Escapes and Anachronisms in the Wayback Machine",
+  "description": "Detects and Blocks Archive Escapes in the Wayback Machine",
   
   "permissions": [
     "background", 
@@ -18,7 +18,7 @@
   "browser_action": {
     "default_icon": "icon.png",
     "default_popup": "popup.html",
-    "default_title": "Rewriting History Defense"
+    "default_title": "Archive Watcher"
   },
   
   "background": {
