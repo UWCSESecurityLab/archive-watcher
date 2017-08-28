@@ -1,4 +1,4 @@
-ArchiveWatcher
+#ArchiveWatcher
 
 This is the client-side defense prototyped and described in "Rewriting History:
 Changing the Archived Web from the Present", by Ada Lerner, Tadayoshi Kohno,
